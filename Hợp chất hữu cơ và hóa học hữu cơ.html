@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hợp chất hữu cơ và hóa học hữu cơ</title>
+<style>
+:root{--bg:#0a1730;--bg2:#12295a;--blk:#122a52;--tile:rgba(255,255,255,.07);--line:rgba(255,255,255,.16);--tx:#eaf1ff;--mute:#a7b9dc;--teal:#2ee6c5;--org:#ff9a3d;--yel:#ffd54a;--blu:#7c9cff;--ink:#06122a;--pop:#0f2147;--lg:rgba(46,230,197,.55)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef4ff;--bg2:#d9e6ff;--blk:#fff;--tile:rgba(10,23,48,.06);--line:rgba(10,23,48,.18);--tx:#0c1d3f;--mute:#4a5f87;--teal:#00997f;--org:#d96a00;--yel:#a67c00;--blu:#3d5bd9;--ink:#fff;--pop:#fff;--lg:rgba(0,153,127,.6)}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:radial-gradient(circle at 50% 45%,var(--bg2),var(--bg));color:var(--tx);font-family:"Be Vietnam Pro","Segoe UI",system-ui,sans-serif;font-size:clamp(10px,min(1.15vw,2.05vh),15px);line-height:1.4;display:flex;flex-direction:column;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;opacity:.55}
+.top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:1.2vh 2vw .4vh}
+.tag{padding:.25em 1em;border:1px solid var(--teal);color:var(--teal);border-radius:99px;font-size:.85em;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.hint{color:var(--mute);font-size:.9em;text-align:right}
+.map{position:relative;z-index:2;flex:1;min-height:0;display:grid;grid-template-columns:1fr minmax(0,.62fr) 1fr;gap:2vw;padding:1.8vh 2vw 2.2vh}
+.col{display:flex;flex-direction:column;gap:1.8vh;min-height:0;justify-content:center}
+svg#ln{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:visible}
+svg#ln path{fill:none;stroke:var(--lg);stroke-width:2;stroke-dasharray:6 7;animation:flow 1.6s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-26}}
+.blk{position:relative;z-index:1;flex:1;min-height:0;background:var(--blk);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:1.2em;padding:.9em 1.1em;display:flex;flex-direction:column;gap:.45em;overflow:auto;scrollbar-width:none;animation:in .6s both,bob var(--d,6s) ease-in-out var(--dl,.6s) infinite;transition:box-shadow .25s,border-color .25s}
+.blk::-webkit-scrollbar{display:none}
+.blk:hover{box-shadow:0 10px 28px rgba(0,0,0,.3);border-color:var(--c)}
+@keyframes in{from{opacity:0;transform:scale(.9)}}
+@keyframes bob{50%{transform:translateY(-.7vh) rotate(.4deg)}}
+.blk h3{margin:0;font-size:1.2em;color:var(--c);padding-right:5.8em}
+.blk p{margin:0}.blk small{color:var(--mute);font-size:.88em}
+.fb{all:unset;cursor:pointer;position:absolute;top:.6em;right:.7em;padding:.25em .8em;border-radius:99px;background:var(--yel);color:var(--ink);font-weight:700;font-size:.82em;animation:pulse 2.4s infinite}
+.fb:hover,.fb:focus-visible{transform:scale(1.1)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,213,74,.6)}50%{box-shadow:0 0 0 .6em rgba(255,213,74,0)}}
+.pills{display:flex;flex-wrap:wrap;gap:.35em}
+.pill{padding:.15em .7em;border-radius:99px;border:1px solid var(--c);font-size:.92em;white-space:nowrap}
+.pill.f{background:var(--c);color:var(--ink);font-weight:700}
+.tiles{display:flex;flex-wrap:wrap;gap:.4em}
+.tl{flex:1 1 4.6em;text-align:center;background:var(--tile);border-radius:.9em;padding:.35em .2em;display:flex;flex-direction:column;align-items:center;line-height:1.2;transition:transform .2s}
+.tl:hover{animation:wig .5s}.tl svg{width:2.6em;height:2.6em}.tl b{font-size:.85em}.tl i{font-style:normal;font-size:.72em;color:var(--mute)}
+@keyframes wig{25%{transform:rotate(-8deg) scale(1.1)}75%{transform:rotate(8deg) scale(1.1)}}
+.tb{display:grid;grid-template-columns:repeat(4,1fr);gap:.4em}
+.chip{all:unset;cursor:pointer;box-sizing:border-box;text-align:center;padding:.3em .2em;border-radius:.8em;border:1px solid var(--c);color:var(--c);display:flex;flex-direction:column;line-height:1.25;transition:.2s}
+.chip b{font-size:.95em}.chip i{font-style:normal;font-size:.85em;color:var(--tx)}
+.chip:hover,.chip:focus-visible{background:var(--c);color:var(--ink);transform:scale(1.07)}.chip:hover i,.chip:focus-visible i{color:var(--ink)}
+.lbl{font-size:.8em;color:var(--mute);margin:.1em 0 -.2em}
+.tlh{display:grid;grid-template-columns:repeat(5,1fr);gap:.3em;position:relative;padding-top:1em}
+.tlh::before{content:"";position:absolute;left:5%;right:5%;top:.4em;border-top:2px dashed var(--c)}
+.ev{all:unset;cursor:pointer;text-align:center;line-height:1.25;position:relative;padding:.25em .1em;border-radius:.6em;transition:.2s}
+.ev::before{content:"";position:absolute;left:50%;top:-.85em;width:.8em;height:.8em;margin-left:-.4em;border-radius:50%;background:var(--c)}
+.ev b{display:block;color:var(--c);font-size:.95em}.ev i{font-style:normal;font-size:.78em;color:var(--mute)}
+.ev:hover,.ev:focus-visible{background:var(--tile);transform:translateY(-2px)}
+.root{all:unset;cursor:pointer;align-self:center;justify-self:center;position:relative;z-index:1;width:min(100%,27vh);aspect-ratio:1;box-sizing:border-box;border-radius:50%;background:radial-gradient(circle,var(--teal),var(--org));color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:.8em;font-weight:800;line-height:1.2;box-shadow:0 0 0 .5em rgba(46,230,197,.18),0 0 0 1.1em rgba(255,154,61,.12);animation:float 5s ease-in-out infinite;transition:filter .2s}
+.root:hover,.root:focus-visible{filter:brightness(1.12)}
+.root svg{width:26%;margin-bottom:.2em;animation:spin 16s linear infinite}
+.root span{font-size:1.08em}.root .to{margin-top:.35em;padding:.1em .9em;border-radius:99px;background:var(--ink);color:var(--yel);font-size:1.2em;letter-spacing:.04em}
+.root em{font-style:normal;font-weight:600;font-size:.78em;margin-top:.4em;animation:blink 1.8s infinite}
+@keyframes blink{50%{opacity:.55}}@keyframes float{50%{transform:translateY(-1.3vh)}}@keyframes spin{to{transform:rotate(360deg)}}
+.st{position:absolute;z-index:3;pointer-events:none;font-size:2.6em;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35));transform:rotate(var(--r));animation:wob var(--d) ease-in-out infinite}
+@keyframes wob{50%{transform:translateY(-1.4vh) rotate(calc(var(--r) + 14deg))}}
+.ov{position:fixed;inset:0;z-index:20;background:rgba(3,9,22,.72);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px;opacity:0;visibility:hidden;transition:.25s;font-size:16px}
+.ov.on{opacity:1;visibility:visible}
+.pop{background:var(--pop);border:1px solid var(--line);border-top:4px solid var(--c,var(--teal));border-radius:22px;width:min(620px,100%);max-height:86vh;overflow:auto;padding:24px;transform:translateY(24px) scale(.96);transition:.3s;position:relative}
+.ov.on .pop{transform:none}
+.pop h3{margin:0 40px 8px 0;font-size:1.35em;color:var(--c,var(--teal))}
+.pop p{margin:8px 0}.pop ul{padding-left:20px;margin:8px 0}.pop li{margin:5px 0}
+.x{all:unset;cursor:pointer;position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;background:var(--line);display:grid;place-items:center}
+.x:hover{background:var(--org);color:var(--ink)}
+.again{all:unset;cursor:pointer;margin-top:14px;padding:.5em 1.2em;border-radius:99px;background:var(--yel);color:var(--ink);font-weight:700}
+.again:hover{filter:brightness(1.1)}
+.k{display:inline-block;padding:2px 10px;border-radius:8px;border:1px solid var(--line);font-family:Consolas,monospace}
+.ex{margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--line);border-left:3px solid var(--org);font-size:.95em}
+@media (max-width:760px),(orientation:portrait){
+body{font-size:clamp(9.5px,min(2.7vw,1.4vh),13px)}
+.hint,.d,.more{display:none}
+.map{grid-template-columns:1fr;grid-template-rows:auto auto 1fr;gap:1.2vh;padding:1vh 3vw 1.5vh}
+.col.l{display:grid;grid-template-columns:1fr 1fr;gap:1.2vh 2.5vw}
+.col.r{display:grid;grid-template-rows:auto 1fr auto}.ev i{display:none}
+.root{width:auto;aspect-ratio:auto;border-radius:99px;padding:.5em 1.2em;flex-direction:row;gap:.6em;box-sizing:border-box}
+.root svg{width:1.8em;margin:0}.root .to{margin:0}.root em span,.root em i{display:none}
+.blk{padding:.7em .8em}.blk h3{padding-right:0;font-size:1.1em}
+.fb{position:static;align-self:flex-start;margin-top:auto}
+.tl svg{width:1.8em;height:1.8em}.tl i{display:none}
+.ov{align-items:end;padding:0}.pop{border-radius:22px 22px 0 0;max-height:90vh}
+.st{font-size:1.9em}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-gas" viewBox="0 0 48 48"><rect x="21" y="3" width="6" height="6" rx="1" fill="#6b7ea6"/><rect x="17" y="8" width="14" height="6" rx="2" fill="#9db1d6"/><rect x="12" y="13" width="24" height="31" rx="9" fill="#4f7cff"/><rect x="12" y="24" width="24" height="7" fill="#ffd54a"/></symbol>
+<symbol id="i-vinegar" viewBox="0 0 48 48"><rect x="19" y="3" width="10" height="7" rx="2" fill="#8a5a2b"/><path d="M19 10h10l6 9v21a4 4 0 0 1-4 4H17a4 4 0 0 1-4-4V19z" fill="#d9a441"/><rect x="17" y="24" width="14" height="12" rx="2" fill="#fff8e1"/><path d="M20 30h8" stroke="#b9822a" stroke-width="2.5"/></symbol>
+<symbol id="i-alc" viewBox="0 0 48 48"><rect x="19" y="3" width="10" height="6" rx="2" fill="#e8eefc"/><path d="M20 9h8l7 9v22a4 4 0 0 1-4 4H17a4 4 0 0 1-4-4V18z" fill="#6cc3ff"/><rect x="17" y="24" width="14" height="12" rx="2" fill="#fff"/><path d="M24 26c3 3 3 5 0 8-3-3-3-5 0-8z" fill="#ff9a3d"/></symbol>
+<symbol id="i-fuel" viewBox="0 0 48 48"><path d="M8 16l7-7h13v6h8a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4z" fill="#e5484d"/><rect x="15" y="3" width="9" height="6" rx="1.5" fill="#555"/><rect x="14" y="21" width="20" height="14" rx="3" fill="#ffd54a"/><path d="M24 24c3 3 4 5 0 8-4-3-3-5 0-8z" fill="#e5484d"/></symbol>
+<symbol id="i-sugar" viewBox="0 0 48 48"><g fill="#fff" stroke="#9db1d6" stroke-width="2"><rect x="5" y="24" width="19" height="19" rx="3"/><rect x="24" y="24" width="19" height="19" rx="3"/><rect x="14" y="6" width="19" height="19" rx="3"/></g></symbol>
+<symbol id="i-pe" viewBox="0 0 48 48"><rect x="19" y="3" width="10" height="5" rx="1.5" fill="#2ee6c5"/><path d="M20 8h8l1 6c5 3 7 6 7 11v15a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4V25c0-5 2-8 7-11z" fill="#8fe3ff" stroke="#4aa8d8" stroke-width="2"/><path d="M13 28q5 3 11 0t11 0" stroke="#4aa8d8" stroke-width="2" fill="none"/></symbol>
+</defs></svg>
+<canvas id="bg"></canvas>
+<div class="top"><span class="tag">Hóa học 11 · Bài 10 · Mục I và II</span><span class="hint">💡 xem fact · bấm tên mỗi loại để xem chi tiết · bấm hình tròn giữa để xem fact ngẫu nhiên 🎲</span></div>
+<div class="map" id="map">
+<svg id="ln" aria-hidden="true"></svg>
+<span class="st" style="left:-.5%;top:-2%;--r:-14deg;--d:5s">🧪</span>
+<span class="st" style="right:-.5%;top:-2%;--r:12deg;--d:6s">🔬</span>
+<span class="st" style="left:-.5%;bottom:-2%;--r:10deg;--d:5.5s">⚗️</span>
+<span class="st" style="right:-.5%;bottom:-2%;--r:-10deg;--d:6.5s">💡</span>
+<span class="st d" style="left:46%;top:6%;--r:8deg;--d:4.5s">⚛️</span>
+<span class="st d" style="left:52%;top:20%;--r:-18deg;--d:5.2s">🧫</span>
+<span class="st d" style="left:44%;bottom:18%;--r:16deg;--d:6s">🧬</span>
+<span class="st d" style="left:51%;bottom:4%;--r:-8deg;--d:4.8s">🔥</span>
+<div class="col l">
+<section class="blk" style="--c:var(--teal);flex:1.1" data-n><h3>Khái niệm</h3>
+<p><b>Hợp chất hữu cơ</b> là hợp chất của carbon (trừ CO, CO₂, muối carbonate, carbide, cyanide…). <b>Hóa học hữu cơ</b> là ngành nghiên cứu các hợp chất hữu cơ.</p>
+<small class="more">Hữu cơ: CH₄, C₂H₅OH, CH₃COOH. Vô cơ dù có carbon: CO, CO₂, CaCO₃, NaCN.</small>
+<button class="fb" data-f="f1">💡 Lịch sử</button></section>
+<section class="blk" style="--c:var(--yel);flex:1.1" data-n><h3>Thành phần nguyên tố</h3>
+<div class="pills"><span class="pill f">C bắt buộc</span><span class="pill">H</span><span class="pill">O</span><span class="pill">N</span><span class="pill">halogen</span><span class="pill">S, P…</span></div>
+<small class="more">Dựa vào thành phần nguyên tố, hợp chất hữu cơ chia thành hai loại: <b>hydrocarbon</b> và <b>dẫn xuất của hydrocarbon</b> (Phần II).</small>
+<button class="fb" data-f="f2">💡 Carbon</button></section>
+<section class="blk" style="--c:var(--org)" data-n><h3>Đặc điểm chung</h3>
+<div class="pills"><span class="pill">Liên kết cộng hóa trị</span><span class="pill">t°nc, t°s thấp</span><span class="pill">Ít tan trong nước</span><span class="pill">Dễ cháy</span><span class="pill">Phản ứng chậm, nhiều sản phẩm</span></div>
+<small class="more">Khi cháy hoàn toàn, thường tạo CO₂ và H₂O.</small>
+<button class="fb" data-f="f3">💡 So với NaCl</button></section>
+<section class="blk" style="--c:var(--blu);flex:1.25" data-n><h3>Quanh ta</h3>
+<div class="tiles">
+<div class="tl"><svg><use href="#i-gas"/></svg><b>Khí gas</b><i>C₃H₈, C₄H₁₀</i></div>
+<div class="tl"><svg><use href="#i-vinegar"/></svg><b>Giấm</b><i>CH₃COOH</i></div>
+<div class="tl"><svg><use href="#i-alc"/></svg><b>Cồn</b><i>C₂H₅OH</i></div>
+<div class="tl"><svg><use href="#i-sugar"/></svg><b>Đường</b><i>C₁₂H₂₂O₁₁</i></div>
+<div class="tl"><svg><use href="#i-fuel"/></svg><b>Xăng</b><i>hydrocarbon</i></div>
+<div class="tl"><svg><use href="#i-pe"/></svg><b>Nhựa PE</b><i>(–CH₂–CH₂–)ₙ</i></div>
+</div>
+<button class="fb" data-f="f4">💡 Ethylene</button></section>
+</div>
+<button class="root" id="rt" data-r aria-label="Xem fact ngẫu nhiên"><svg viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,6 88,28 88,72 50,94 12,72 12,28" fill="none" stroke="#06122a" stroke-width="7"/><circle cx="50" cy="6" r="8" fill="#06122a"/><circle cx="88" cy="72" r="8" fill="#06122a"/><circle cx="12" cy="72" r="8" fill="#06122a"/></svg><span>Hợp chất hữu cơ<br>và hóa học hữu cơ</span><b class="to">Tổ 4</b><em><i>Bấm xem fact </i><span>ngẫu nhiên </span>🎲</em></button>
+<div class="col r">
+<section class="blk" style="--c:var(--teal)" data-n><h3>Hydrocarbon</h3>
+<p>Những hợp chất được tạo thành chỉ từ hai nguyên tố <b>carbon và hydrogen</b>.</p>
+<div class="tb" id="cH"></div>
+<button class="fb" data-f="f5">💡 Benzene</button></section>
+<section class="blk" style="--c:var(--org);flex:1.35" data-n><h3>Dẫn xuất của hydrocarbon</h3>
+<p>Thay một hay nhiều nguyên tử H của hydrocarbon bằng nguyên tử hoặc nhóm nguyên tử khác<span class="more"> (thường chứa oxygen, nitrogen, sulfur, halogen,…)</span>.</p>
+<div class="tb" id="cD"></div><div class="lbl d">… và còn nhiều loại khác:</div><div class="tb" id="cE"></div>
+<button class="fb" data-f="f6">💡 Nhóm chức</button></section>
+<section class="blk" style="--c:var(--yel);flex:.95" data-n><h3>Lịch sử ra đời</h3>
+<p class="more">Ban đầu người ta tin chất hữu cơ chỉ có trong cơ thể sinh vật. Các tổng hợp trong phòng thí nghiệm đã thay đổi quan niệm đó.</p>
+<div class="tlh" id="tH"></div></section>
+</div>
+</div>
+<div class="ov" id="ov" aria-hidden="true"><div class="pop" role="dialog" aria-modal="true" id="pop"><button class="x" id="cl" aria-label="Đóng">✕</button><div id="body"></div></div></div>
+<script>
+const T="#2ee6c5",O="#ff9a3d",Y="#ffd54a";
+const D={
+alkane:["Alkane","CH₄",T,`<p>Hydrocarbon <b>no, mạch hở</b>, chỉ có liên kết đơn.</p><p>Công thức chung: <span class="k">CₙH₂ₙ₊₂</span> (n ≥ 1)</p><div class="ex"><b>Ví dụ:</b> CH₄ (methane), C₂H₆, C₃H₈. Thành phần chính của khí gas, xăng, dầu mỏ.</div>`],
+alkene:["Alkene","CH₂=CH₂",T,`<p>Hydrocarbon <b>không no, mạch hở</b>, có một liên kết đôi C=C.</p><p>Công thức chung: <span class="k">CₙH₂ₙ</span> (n ≥ 2)</p><div class="ex"><b>Ví dụ:</b> CH₂=CH₂ (ethylene), C₃H₆ (propylene). Ethylene là nguyên liệu sản xuất nhựa PE.</div>`],
+alkyne:["Alkyne","CH≡CH",T,`<p>Hydrocarbon <b>không no, mạch hở</b>, có một liên kết ba C≡C.</p><p>Công thức chung: <span class="k">CₙH₂ₙ₋₂</span> (n ≥ 2)</p><div class="ex"><b>Ví dụ:</b> CH≡CH (acetylene), dùng trong đèn xì hàn cắt kim loại vì cháy tỏa nhiều nhiệt.</div>`],
+arene:["Arene","C₆H₆",T,`<p>Hydrocarbon <b>thơm</b>, trong phân tử có một hay nhiều vòng benzene.</p><p>Dãy đồng đẳng của benzene: <span class="k">CₙH₂ₙ₋₆</span> (n ≥ 6)</p><div class="ex"><b>Ví dụ:</b> C₆H₆ (benzene), C₇H₈ (toluene). Dùng làm dung môi, nguyên liệu sản xuất thuốc nhuộm, chất dẻo.</div>`],
+halo:["Dẫn xuất halogen","CH₃Cl",O,`<p>Nhóm chức: <span class="k">–X</span> (X là F, Cl, Br, I).</p><div class="ex"><b>Ví dụ:</b> CH₃Cl, CHCl₃. Dùng làm dung môi, chất làm lạnh, thuốc bảo vệ thực vật.</div>`],
+alc:["Alcohol","C₂H₅OH",O,`<p>Nhóm chức: <span class="k">–OH</span> gắn vào nguyên tử carbon no.</p><div class="ex"><b>Ví dụ:</b> CH₃OH (methanol, độc), C₂H₅OH (ethanol) trong cồn, rượu, nhiên liệu sinh học.</div>`],
+acid:["Carboxylic acid","CH₃COOH",O,`<p>Nhóm chức: <span class="k">–COOH</span>.</p><div class="ex"><b>Ví dụ:</b> CH₃COOH (acetic acid) trong giấm ăn; HCOOH (formic acid) có trong nọc kiến.</div>`],
+phe:["Phenol","C₆H₅OH",O,`<p>Nhóm chức: <span class="k">–OH</span> gắn trực tiếp vào vòng benzene.</p><div class="ex"><b>Ví dụ:</b> C₆H₅OH (phenol), dùng sản xuất nhựa, thuốc nhuộm, chất sát khuẩn.</div>`],
+ald:["Aldehyde","CH₃CHO",O,`<p>Nhóm chức: <span class="k">–CHO</span>.</p><div class="ex"><b>Ví dụ:</b> HCHO (formaldehyde; dung dịch formalin dùng bảo quản mẫu vật), CH₃CHO (acetaldehyde).</div>`],
+ket:["Ketone","CH₃COCH₃",O,`<p>Nhóm chức: <span class="k">&gt;C=O</span> nằm giữa hai gốc hydrocarbon.</p><div class="ex"><b>Ví dụ:</b> CH₃COCH₃ (acetone), dùng làm dung môi, tẩy sơn móng tay.</div>`],
+est:["Ester","CH₃COOC₂H₅",O,`<p>Nhóm chức: <span class="k">–COO–</span>.</p><div class="ex"><b>Ví dụ:</b> CH₃COOC₂H₅ (ethyl acetate) có mùi thơm trái cây, dùng làm dung môi, hương liệu. Chất béo cũng là ester.</div>`],
+ami:["Amine","CH₃NH₂",O,`<p>Nhóm chức: <span class="k">–NH₂</span> (hoặc –NH–, –N&lt;) liên kết với gốc hydrocarbon.</p><div class="ex"><b>Ví dụ:</b> CH₃NH₂ (methylamine), C₆H₅NH₂ (aniline), nguyên liệu sản xuất thuốc nhuộm, dược phẩm.</div>`]
+};
+const F={
+f1:["Lịch sử hóa học hữu cơ",Y,`<ul><li><b>~1807:</b> J. J. Berzelius đưa ra thuật ngữ “hợp chất hữu cơ”, cho rằng chúng chỉ có trong cơ thể sinh vật nhờ một “lực sống” (thuyết vitalism).</li><li><b>1828:</b> Friedrich Wöhler điều chế urea từ ammonium cyanate, một chất vô cơ. Thuyết “lực sống” bắt đầu lung lay.</li><li><b>1845:</b> Hermann Kolbe tổng hợp acetic acid từ các chất vô cơ.</li><li><b>1861:</b> A. M. Butlerov nêu thuyết cấu tạo hóa học, nền tảng của hóa học hữu cơ hiện đại.</li></ul>`],
+f2:["Vì sao carbon đặc biệt?",Y,`<p>Nguyên tử carbon có 4 electron hóa trị, tạo liên kết bền với chính nó và với nhiều nguyên tố khác, hình thành <b>mạch dài, mạch nhánh, mạch vòng</b> với liên kết đơn, đôi, ba. Nhờ vậy số hợp chất hữu cơ đã biết lên tới hàng chục triệu.</p>`],
+f3:["Hữu cơ và vô cơ: so sánh nhiệt độ",Y,`<p>Ethanol (hữu cơ) sôi ở khoảng <b>78 °C</b>, còn muối ăn NaCl (hợp chất ion) nóng chảy ở khoảng <b>801 °C</b>.</p><p>Các phân tử hữu cơ liên kết cộng hóa trị, lực hút giữa các phân tử yếu nên chỉ cần ít năng lượng để tách chúng ra. Đó cũng là lý do nhiều chất hữu cơ dễ bay hơi.</p>`],
+f4:["Ethylene làm chín quả",Y,`<p>Chuối, xoài… tự sinh ra khí <b>ethylene (C₂H₄)</b>, một alkene, làm quả chín. Để quả chín cạnh quả xanh trong túi kín sẽ khiến quả xanh chín nhanh hơn.</p><p>Ethylene cũng là nguyên liệu quan trọng để sản xuất nhựa PE.</p>`],
+f5:["Giấc mơ của Kekulé (1865)",Y,`<p>August Kekulé đề xuất cấu trúc vòng sáu cạnh của benzene, với các liên kết đơn và đôi xen kẽ. Ông kể ý tưởng đến từ giấc mơ về con rắn tự cắn đuôi.</p>`],
+f6:["Nhóm chức quyết định tính chất",Y,`<p>Hai chất cùng công thức <b>C₂H₆O</b> nhưng khác nhóm chức: ethanol (C₂H₅OH, có –OH) sôi ở khoảng <b>78 °C</b>, còn dimethyl ether (CH₃OCH₃) sôi ở khoảng <b>−24 °C</b>.</p>`]
+};
+const X=[
+["Wöhler và urea (1828)",Y,`<p>Friedrich Wöhler điều chế <b>urea</b>, chất có trong nước tiểu, từ ammonium cyanate là chất vô cơ. Đây là cú hích làm sụp đổ quan niệm chất hữu cơ chỉ do “lực sống” tạo ra.</p>`],
+["Berzelius đặt tên “hữu cơ”",Y,`<p>Nhà hóa học Thụy Điển J. J. Berzelius dùng từ “hữu cơ” cho các chất lấy từ cơ thể sinh vật. Nghĩa gốc của từ này khác xa định nghĩa ngày nay: hợp chất của carbon.</p>`],
+["Methane từ hầm biogas",Y,`<p>Khi chất hữu cơ như phân gia súc, rác thực vật phân hủy trong điều kiện thiếu oxygen sẽ sinh ra khí <b>methane (CH₄)</b>, thành phần chính của biogas và khí thiên nhiên.</p>`],
+["Dầu mỏ là gì?",Y,`<p>Dầu mỏ là hỗn hợp phức tạp, chủ yếu gồm các <b>hydrocarbon</b>. Chưng cất dầu mỏ cho xăng, dầu diesel, nhựa đường và nguyên liệu để sản xuất nhựa, sợi tổng hợp.</p>`],
+["Giấm ăn có gì?",Y,`<p>Giấm ăn là dung dịch loãng của <b>acetic acid (CH₃COOH)</b>, thường khoảng 4–5%. Vị chua của giấm đến từ nhóm chức –COOH.</p>`],
+["Cồn 70° và cồn 96°",Y,`<p>Cồn y tế 70° thường được dùng để sát khuẩn hơn cồn đậm đặc hơn, vì thấm vào tế bào vi khuẩn tốt hơn. Thành phần chính của cả hai là <b>ethanol</b>.</p>`],
+["Nọc kiến và formic acid",Y,`<p>Nọc kiến có <b>formic acid (HCOOH)</b>, acid carboxylic đơn giản nhất. Tên “formic” bắt nguồn từ tiếng Latin <i>formica</i>, nghĩa là con kiến.</p>`],
+["Ngọn lửa acetylene",Y,`<p>Acetylene (CH≡CH) cháy trong oxygen cho ngọn lửa nóng khoảng 3000 °C, đủ để hàn và cắt kim loại.</p>`]
+];
+const EV=[["~1807","Berzelius","đặt tên “hữu cơ”",`<p>J. J. Berzelius (Thụy Điển) đưa ra thuật ngữ “hợp chất hữu cơ” cho các chất lấy từ sinh vật, và cho rằng chúng chỉ được tạo ra nhờ một “lực sống” (thuyết vitalism). Đây là cột mốc đầu tiên của hóa học hữu cơ.</p>`],["1828","Wöhler","urea",`<p>Friedrich Wöhler (Đức) điều chế <b>urea</b>, chất có trong nước tiểu, từ ammonium cyanate là chất vô cơ. Thí nghiệm cho thấy chất hữu cơ có thể tạo ra ngoài cơ thể sinh vật, làm lung lay thuyết “lực sống”.</p>`],["1845","Kolbe","acetic acid",`<p>Hermann Kolbe tổng hợp <b>acetic acid</b> (thành phần chính của giấm) từ các chất vô cơ, góp thêm bằng chứng rằng hợp chất hữu cơ cũng tuân theo các quy luật hóa học chung.</p>`],["1861","Butlerov","thuyết cấu tạo",`<p>A. M. Butlerov nêu <b>thuyết cấu tạo hóa học</b>: tính chất của chất phụ thuộc vào thành phần phân tử và thứ tự liên kết giữa các nguyên tử. Đây là nền tảng của hóa học hữu cơ hiện đại.</p>`],["1865","Kekulé","vòng benzene",`<p>August Kekulé đề xuất cấu trúc vòng sáu cạnh của benzene. Ông kể ý tưởng đến từ giấc mơ về con rắn tự cắn đuôi.</p>`]];
+EV.forEach(e=>{const b=document.createElement("button");b.className="ev";b.innerHTML=`<b>${e[0]}</b><i>${e[1]} · ${e[2]}</i>`;b.onclick=()=>{last=b;open(e[1]+" ("+e[0]+")",Y,e[3],b)};document.getElementById("tH").appendChild(b)});
+const POOL=Object.values(F).concat(X);
+const ov=document.getElementById("ov"),pop=document.getElementById("pop"),bdy=document.getElementById("body");let last=null,li=-1;
+function open(t,c,h,el,again){bdy.innerHTML="<h3>"+t+"</h3>"+h+(again?'<button class="again" id="ag">🎲 Fact khác</button>':"");pop.style.setProperty("--c",c);ov.classList.add("on");ov.setAttribute("aria-hidden","false");if(el)last=el;if(again)document.getElementById("ag").onclick=rnd;else document.getElementById("cl").focus()}
+function rnd(){let i;do{i=Math.floor(Math.random()*POOL.length)}while(i===li);li=i;const f=POOL[i];open("🎲 "+f[0],f[1],f[2],null,true)}
+function close(){ov.classList.remove("on");ov.setAttribute("aria-hidden","true");if(last)last.focus()}
+function chip(k,id){const d=D[k],b=document.createElement("button");b.className="chip";b.style.setProperty("--c",d[2]);b.innerHTML=`<b>${d[0].toLowerCase()}</b><i>${d[1]}</i>`;b.onclick=()=>open(d[0],d[2],d[3],b);document.getElementById(id).appendChild(b)}
+["alkane","alkene","alkyne","arene"].forEach(k=>chip(k,"cH"));["halo","alc","acid"].forEach(k=>chip(k,"cD"));["phe","ald","ket","est","ami"].forEach(k=>chip(k,"cE"));
+document.querySelectorAll(".fb").forEach(b=>{const f=F[b.dataset.f];b.onclick=()=>{last=b;open(f[0],f[1],f[2],b)}});
+document.getElementById("rt").onclick=()=>{last=document.getElementById("rt");rnd()};
+document.getElementById("cl").onclick=close;ov.onclick=e=>{if(e.target===ov)close()};document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+document.querySelectorAll("[data-n]").forEach(n=>{n.style.setProperty("--d",(5+Math.random()*3).toFixed(1)+"s");n.style.setProperty("--dl",(.7+Math.random()*1.5).toFixed(1)+"s")});
+const map=document.getElementById("map"),ln=document.getElementById("ln"),root=document.querySelector("[data-r]");
+function lines(){const m=map.getBoundingClientRect(),r=root.getBoundingClientRect(),rx=r.left-m.left+r.width/2,ry=r.top-m.top+r.height/2;let s="";document.querySelectorAll("[data-n]").forEach(n=>{const b=n.getBoundingClientRect(),x=b.left-m.left+b.width/2,y=b.top-m.top+b.height/2,mx=(rx+x)/2,my=(ry+y)/2,dx=Math.abs(x-rx)>Math.abs(y-ry);s+=`<path d="M${rx} ${ry}Q${dx?mx:rx} ${dx?ry:my} ${x} ${y}"/>`});ln.innerHTML=s}
+new ResizeObserver(lines).observe(map);addEventListener("resize",lines);setTimeout(lines,800);
+const cv=document.getElementById("bg"),cx=cv.getContext("2d");let W,H,P=[];
+function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight;P=Array.from({length:Math.min(40,Math.floor(W*H/28000))},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3}))}
+function dr(){cx.clearRect(0,0,W,H);P.forEach(p=>{p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+H)%H});for(let i=0;i<P.length;i++){for(let j=i+1;j<P.length;j++){const d=Math.hypot(P[i].x-P[j].x,P[i].y-P[j].y);if(d<130){cx.strokeStyle="rgba(46,230,197,"+(.25*(1-d/130))+")";cx.beginPath();cx.moveTo(P[i].x,P[i].y);cx.lineTo(P[j].x,P[j].y);cx.stroke()}}cx.fillStyle="rgba(255,154,61,.5)";cx.beginPath();cx.arc(P[i].x,P[i].y,2.2,0,7);cx.fill()}requestAnimationFrame(dr)}
+addEventListener("resize",rs);rs();dr();
+</script>
+</body>
+</html>
